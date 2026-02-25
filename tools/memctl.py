@@ -79,6 +79,29 @@ def cmd_evolve_weekly_pack(args):
 def cmd_evolve_weekly_apply(args):
     pass
 
+def cmd_migrate_legacy(args):
+    if not os.path.exists("MEMORY.md"):
+        print("[TriMemory] 没有找到现有的 MEMORY.md。")
+        return
+    size = os.path.getsize("MEMORY.md")
+    if size < 1500:
+        print("[TriMemory] MEMORY.md 体积正常（极简状态），无需迁移。")
+        return
+        
+    ts = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+    backup_path = f"memory/archive/legacy-MEMORY-{ts}.md"
+    shutil.move("MEMORY.md", backup_path)
+    cmd_ensure(None)
+    print(f"\n[⚠️ 架构迁移警告] 发现过大/臃肿的遗留 MEMORY.md (大小: {size} bytes)。")
+    print(f"已将其移动至: {backup_path}")
+    print(f"现已生成了符合 TriMemory Strong 约束的极简版 MEMORY.md。")
+    print(f"\n>>> [Agent 必须执行的动作] <<<")
+    print(f"请使用 'read' 工具读取 {backup_path} 的内容，并使用语义理解将其拆解路由:")
+    print(f"  - 长期事实与约定 -> python3 tools/memctl.py kb_append facts '...'")
+    print(f"  - 方法论/Playbook -> python3 tools/memctl.py kb_append playbooks '...'")
+    print(f"  - 核心身份/指针 -> 使用 edit 工具精简地写回新的 MEMORY.md")
+    print(f"绝对禁止将大段长文直接塞回 MEMORY.md！\n")
+
 def cmd_lint(args):
     text = ""
     if os.path.exists(args.target):
@@ -143,6 +166,8 @@ if __name__ == "__main__":
     subparsers.add_parser("evolve_weekly_pack")
     subparsers.add_parser("evolve_weekly_apply")
     
+    subparsers.add_parser("migrate_legacy")
+    
     p_lint = subparsers.add_parser("lint")
     p_lint.add_argument("target", help="Text string or file path to check")
     
@@ -156,4 +181,5 @@ if __name__ == "__main__":
     elif args.cmd == "housekeeping_daily": cmd_housekeeping_daily(args)
     elif args.cmd == "evolve_weekly_pack": cmd_evolve_weekly_pack(args)
     elif args.cmd == "evolve_weekly_apply": cmd_evolve_weekly_apply(args)
+    elif args.cmd == "migrate_legacy": cmd_migrate_legacy(args)
     elif args.cmd == "lint": cmd_lint(args)

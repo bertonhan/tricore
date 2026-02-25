@@ -13,9 +13,15 @@ mkdir -p memory/archive
 
 # 2. 复制引擎并初始化基础模板
 cp tools/memctl.py tools/memctl.py 2>/dev/null || echo "memctl.py 已经在 tools 目录中了"
+
+# 3. 执行旧版 MEMORY.md 架构迁移检查
+echo "[TriMemory] 正在检查和迁移遗留的 MEMORY.md..."
+python3 tools/memctl.py migrate_legacy
+
+# 4. 补齐其他所需文件
 python3 tools/memctl.py ensure
 
-# 3. 部署最高安全策略 Linter
+# 5. 部署最高安全策略 Linter
 POLICY_FILE="POLICY.md"
 if [ ! -f "$POLICY_FILE" ]; then
     echo "# POLICY.md - 安全规则（最高优先级加载）" > "$POLICY_FILE"

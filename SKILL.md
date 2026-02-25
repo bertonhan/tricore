@@ -40,7 +40,7 @@ allowed-tools:
 
 ---
 
-## 🚀 安装与初始化
+## 🚀 安装与初始化 (The 3-Step Setup)
 
 在任何全新的 OpenClaw 环境中，执行以下命令即可部署 TriMemory Strong 架构：
 
@@ -49,11 +49,21 @@ allowed-tools:
 bash ./install.sh
 ```
 
-**`install.sh` 将会执行：**
+**`install.sh` 按照以下顺序执行：**
+
+### Step 1: 核心引擎部署
 1. 创建标准的 `memory/state/`, `memory/kb/`, `memory/daily/` 等目录。
-2. 将 `tools/memctl.py` 复制到环境的 `tools/` 目录下。
-3. 执行 `python3 tools/memctl.py ensure` 初始化 `WORKING.md` 和基础模板。
-4. 在系统的 `POLICY.md` 中注入 `[CRITICAL: TriMemory Compliance]` 的最高优先级安全防线。
+2. 将 `tools/memctl.py` 引擎部署至当前环境。
+
+### Step 2: 强制旧版 MEMORY 迁移 (Agent Action Required)
+在低资源架构下，一个充斥着对话历史和日记的庞大 `MEMORY.md` 极其致命。
+脚本会自动检测当前的 `MEMORY.md`：
+- 如果发现它过于臃肿（> 1500 bytes），会将其重命名并**移动至 `memory/archive/legacy-MEMORY-<date>.md`**。
+- 然后在根目录重建符合规范的**极简版 `MEMORY.md` 模板**。
+- **Agent 注意：此时你需要主动使用 `read` 阅读 legacy 备份文件，并调用 `memctl.py` 重新分发这批遗产**（事实入 `kb/facts`，规则入 `kb/playbooks`，日志丢入 `daily`），**绝对禁止**将长文原样贴回新的 MEMORY.md！
+
+### Step 3: 系统全局 Linter 阻断部署
+脚本将在系统的 `POLICY.md` 中注入 `[CRITICAL: TriMemory Compliance]` 最高优先级防线。此后 Agent 执行的所有涉及落盘、状态更新、自动任务的规划，必须全部通过 `memctl.py lint` 的正则检查，否则在终端红字拒绝。
 
 ---
 
