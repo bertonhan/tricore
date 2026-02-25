@@ -81,11 +81,11 @@ def cmd_evolve_weekly_apply(args):
 
 def cmd_migrate_legacy(args):
     if not os.path.exists("MEMORY.md"):
-        print("[TriMemory] 没有找到现有的 MEMORY.md。")
+        print("[TriCore] 没有找到现有的 MEMORY.md。")
         return
     size = os.path.getsize("MEMORY.md")
     if size < 1500:
-        print("[TriMemory] MEMORY.md 体积正常（极简状态），无需迁移。")
+        print("[TriCore] MEMORY.md 体积正常（极简状态），无需迁移。")
         return
         
     ts = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
@@ -94,7 +94,7 @@ def cmd_migrate_legacy(args):
     cmd_ensure(None)
     print(f"\n[⚠️ 架构迁移警告] 发现过大/臃肿的遗留 MEMORY.md (大小: {size} bytes)。")
     print(f"已将其移动至: {backup_path}")
-    print(f"现已生成了符合 TriMemory Strong 约束的极简版 MEMORY.md。")
+    print(f"现已生成了符合 TriCore 约束的极简版 MEMORY.md。")
     print(f"\n>>> [Agent 必须执行的动作] <<<")
     print(f"请使用 'read' 工具读取 {backup_path} 的内容，并使用语义理解将其拆解路由:")
     print(f"  - 长期事实与约定 -> python3 tools/memctl.py kb_append facts '...'")
@@ -116,7 +116,7 @@ def cmd_lint(args):
     forbidden_files = ["task_plan.md", "findings.md", "progress.md", "reflection.md"]
     for ff in forbidden_files:
         if re.search(r"\b" + re.escape(ff) + r"\b", text):
-            errors.append(f"Forbidden file reference: {ff} is deprecated in TriMemory Strong.")
+            errors.append(f"Forbidden file reference: {ff} is deprecated in TriCore.")
             
     # Check for writing directly to root date files instead of memory/daily/ or without memctl
     if re.search(r">>.*memory/\d{4}-\d{2}-\d{2}\.md", text):
@@ -131,13 +131,13 @@ def cmd_lint(args):
         errors.append("Forbidden shell append to MEMORY.md: keep it tiny and strict.")
 
     if errors:
-        print("[TriMemory LINT ERROR] Target violates TriMemory Strong architecture:")
+        print("[TriCore LINT ERROR] Target violates TriCore architecture:")
         for e in errors:
             print(f"  - {e}")
         print("\nPlease rewrite your prompt/script to use 'python3 tools/memctl.py (capture|kb_append|work_upsert)'")
         sys.exit(1)
     else:
-        print("[TriMemory LINT PASS] Target complies with architecture.")
+        print("[TriCore LINT PASS] Target complies with architecture.")
         sys.exit(0)
 
 if __name__ == "__main__":

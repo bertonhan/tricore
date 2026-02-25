@@ -1,7 +1,7 @@
 ---
 name: planning-with-files
-version: "5.0.0-trimemory"
-description: 基于 TriMemory Strong 架构的结构化任务规划与执行系统。整合了八层智能体架构、ReAct、Reflexion 和 Plan-Execute-Plan 架构。全面废除根目录零散的 plan/findings 文件，统一使用确定性的 tools/memctl.py 进行工作流和记忆管理。
+version: "5.0.0-tricore"
+description: 基于 TriCore 架构的结构化任务规划与执行系统。整合了八层智能体架构、ReAct、Reflexion 和 Plan-Execute-Plan 架构。全面废除根目录零散的 plan/findings 文件，统一使用确定性的 tools/memctl.py 进行工作流和记忆管理。
 user-invocable: true
 allowed-tools:
   - Read
@@ -26,18 +26,18 @@ hooks:
           command: "echo '[planning-with-files] Tool executed. Remember to use memctl.py (work_upsert/capture/kb_append) to persist state if a phase or task is completed.'"
 ---
 
-# Planning with Files (TriMemory Strong Edition)
+# Planning with Files (TriCore Edition)
 
-这是基于 **TriMemory Strong** 架构的结构化任务规划系统。本技能保留了 ReAct（推理-行动循环）、Reflexion（自我反思）和 PEP（Plan-Execute-Plan）的**认知架构**，但将其**存储和执行引擎**完全迁移到了确定性的 `tools/memctl.py`。
+这是基于 **TriCore** 架构的结构化任务规划系统。本技能保留了 ReAct（推理-行动循环）、Reflexion（自我反思）和 PEP（Plan-Execute-Plan）的**认知架构**，但将其**存储和执行引擎**完全迁移到了确定性的 `tools/memctl.py`。
 
 ⚠️ **重大架构变更**：
 绝对**禁止**在项目根目录创建 `task_plan.md`, `findings.md`, `progress.md`, `reflection.md`！所有状态和记忆必须通过 `memctl.py` 路由到 `memory/` 目录。
 
 ---
 
-## 核心架构映射 (Mapping to TriMemory Strong)
+## 核心架构映射 (Mapping to TriCore)
 
-| 传统概念 | TriMemory 等效实现 | 使用工具 |
+| 传统概念 | TriCore 等效实现 | 使用工具 |
 |---|---|---|
 | `task_plan.md` | `memory/state/WORKING.md` 中的 `## Active Tasks` 块 | `python3 tools/memctl.py work_upsert --title "..." --goal "..."` |
 | `progress.md` | 任务的 `ProgressLog` 或每日日志 `memory/daily/*.md` | `python3 tools/memctl.py capture "note"` |

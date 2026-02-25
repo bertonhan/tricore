@@ -1,7 +1,7 @@
 ---
 name: self-evolution
-version: "3.0.0-trimemory"
-description: Sara 的自我进化系统（TriMemory 适配版）。核心定位：通过获取外部互联网知识（GitHub/论文/文档），实现真正的代码级、架构级和工具级升级。解耦记忆管理，所有进化产生的状态、决策和知识沉淀均交由 TriMemory Strong (memctl.py) 负责。
+version: "3.0.0-tricore"
+description: Sara 的自我进化系统（TriCore 适配版）。核心定位：通过获取外部互联网知识（GitHub/论文/文档），实现真正的代码级、架构级和工具级升级。解耦记忆管理，所有进化产生的状态、决策和知识沉淀均交由 TriCore (memctl.py) 负责。
 allowed-tools:
   - web_search
   - web_fetch
@@ -10,13 +10,13 @@ allowed-tools:
   - default_api:write
 ---
 
-# Sara 自我进化系统 (Code-First & TriMemory Edition)
+# Sara 自我进化系统 (Code-First & TriCore Edition)
 
 本技能定义了 Sara (OpenClaw) 如何进行**实质性的自我迭代**。
 在 `v3.0.0` 架构调整后，本系统严格剥离了“记忆管理”职能。过去随意在 `memory/cheatsheets/` 或 `memory/daily-learning/` 写入大量笔记的行为已被**全面禁止**。
 
 **全局架构边界**：
-- **TriMemory Strong** = 系统的**数据库与状态机**（负责存）。
+- **TriCore** = 系统的**数据库与状态机**（负责存）。
 - **Self-Evolution** = 系统的 **R&D（研发）与 CI/CD 引擎**（负责算、学、改）。
 
 ## 核心定位：代码级与架构级升级
@@ -53,8 +53,8 @@ allowed-tools:
   python3 tools/memctl.py --help  # 确保修改后未崩溃
   ```
 
-### 5. 状态与知识持久化 (Handover to TriMemory)
-- **动作**：进化成功后，将**进化决策和架构变更**交给 TriMemory Strong 记录。
+### 5. 状态与知识持久化 (Handover to TriCore)
+- **动作**：进化成功后，将**进化决策和架构变更**交给 TriCore 记录。
 - **禁止**：严禁手动创建 `xxx-learning.md`。
 - **合规记录方式**：
   ```bash
@@ -77,4 +77,4 @@ allowed-tools:
 4. 将失败的教训写入 `memory/kb/decisions.md`（“为什么该方案不可行”），防止未来重复踩坑。
 
 ---
-**Summary**: Self-Evolution 负责向外探索和向内动刀（改代码），改完后向 TriMemory 汇报（记日志）。职责分明，永不越界。
+**Summary**: Self-Evolution 负责向外探索和向内动刀（改代码），改完后向 TriCore 汇报（记日志）。职责分明，永不越界。

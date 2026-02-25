@@ -1,16 +1,16 @@
 ---
 name: react-agent
-version: "2.0.0-trimemory"
-description: 基于 TriMemory Strong 架构重构的 ReAct Agent 实现。原生集成 memory_search、WORKING.md 和 kb 知识库，废弃旧版独立的三层记忆类，完全融入系统级底层记忆基础设施。
+version: "2.0.0-tricore"
+description: 基于 TriCore 架构重构的 ReAct Agent 实现。原生集成 memory_search、WORKING.md 和 kb 知识库，废弃旧版独立的三层记忆类，完全融入系统级底层记忆基础设施。
 allowed-tools:
   - default_api:exec
   - memory_search
   - memory_get
 ---
 
-# ReAct Agent 技能 (TriMemory Strong Edition)
+# ReAct Agent 技能 (TriCore Edition)
 
-这是为 OpenClaw 环境深度定制的 ReAct Agent 架构实现。在 `v2.0.0` 版本中，我们彻底移除了旧版独立维护的 `ShortTermMemory`, `WorkingMemory`, `LongTermMemory` Python 类，全面接入系统级的 **TriMemory Strong** 架构。
+这是为 OpenClaw 环境深度定制的 ReAct Agent 架构实现。在 `v2.0.0` 版本中，我们彻底移除了旧版独立维护的 `ShortTermMemory`, `WorkingMemory`, `LongTermMemory` Python 类，全面接入系统级的 **TriCore** 架构。
 
 ## 核心特性
 
@@ -18,7 +18,7 @@ allowed-tools:
 - 思考 (Thought) → 行动 (Action) → 观察 (Observation) → 记录 (Record) → 循环
 - 完全依赖系统内置工具
 
-### 2. TriMemory Strong 记忆映射
+### 2. TriCore 记忆映射
 旧版的内存字典（In-Memory Dict）实现已被替换为持久化的文件/向量检索基建：
 
 *   **短期记忆 (Short-Term)**：直接使用 OpenClaw 维持的**最近 10-20 轮对话上下文**。
@@ -37,11 +37,11 @@ allowed-tools:
 import subprocess
 import json
 
-class TriMemoryReActAgent:
+class TriCoreReActAgent:
     def __init__(self, task_id):
         self.task_id = task_id
 
-    # --- 记忆接口 (对接 TriMemory Strong) ---
+    # --- 记忆接口 (对接 TriCore) ---
     def update_working_memory(self, title, goal, log):
         """更新工作记忆 (WORKING.md)"""
         cmd = [
@@ -91,7 +91,7 @@ class TriMemoryReActAgent:
 ## 设计原则与演进
 
 ### 1. 消除状态孤岛
-旧版 ReAct Agent 把状态保存在自身进程内存中，一旦重启就会丢失。使用 TriMemory Strong 后，Agent 重启也能通过读取 `WORKING.md` 瞬间恢复心智状态。
+旧版 ReAct Agent 把状态保存在自身进程内存中，一旦重启就会丢失。使用 TriCore 后，Agent 重启也能通过读取 `WORKING.md` 瞬间恢复心智状态。
 
 ### 2. 检索优先 (Search-First)
 严禁 Agent `cat` 或 `read` 庞大的历史文件。如果需要历史经验，必须在 ReAct 循环开始前调用 `memory_search` 获取最相关的 snippet。
@@ -100,4 +100,4 @@ class TriMemoryReActAgent:
 在此架构下，ReAct 不再是一个需要被 `python run.py` 启动的独立机器人，而是你（OpenClaw Agent）本身的思考范式——你可以直接在大脑里执行这套循环，并将状态实打实地写进硬盘。
 
 ---
-**Sara 的 ReAct Agent (v2.0.0)** - 与 TriMemory Strong 完美融合的运行时心智模型。🚀✨
+**Sara 的 ReAct Agent (v2.0.0)** - 与 TriCore 完美融合的运行时心智模型。🚀✨
