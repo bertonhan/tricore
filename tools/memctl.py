@@ -112,11 +112,13 @@ def cmd_lint(args):
 
     errors = []
     
-    # Check for forbidden files
+    # Check for forbidden file WRITE commands (not just mere mentions)
     forbidden_files = ["task_plan.md", "findings.md", "progress.md", "reflection.md"]
     for ff in forbidden_files:
-        if re.search(r"\b" + re.escape(ff) + r"\b", text):
-            errors.append(f"Forbidden file reference: {ff} is deprecated in TriCore.")
+        # Match shell redirects like "> findings.md", ">> task_plan.md", or tool arguments like "path": "task_plan.md"
+        if re.search(r"(>|>>|touch|vim|nano|cat\s+>)\s*" + re.escape(ff), text) or \
+           re.search(r"[\"'](file_)?path[\"']\s*:\s*[\"']" + re.escape(ff) + r"[\"']", text):
+            errors.append(f"Forbidden file WRITE detected: {ff} is deprecated in TriCore.")
             
     # Check for writing directly to root date files instead of memory/daily/ or without memctl
     if re.search(r">>.*memory/\d{4}-\d{2}-\d{2}\.md", text):

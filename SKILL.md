@@ -10,7 +10,16 @@ allowed-tools:
   - memory_get
 ---
 
-# TriCore 架构 (TriCore-Strong)
+# 🤖 Agent Usage Guide (Read First)
+
+**如果你是当前的 AI Agent，并且刚刚被要求加载、使用或分析此技能：**
+1. 这是你的底层操作系统法则。你的记忆和状态已经被完全约束在 TriCore 架构下。你**严禁**随意在根目录创建类似于 `task_plan.md` 或 `findings.md` 的独立文本文件！
+2. 你的记忆写操作必须且只能由命令行的 `python3 tools/memctl.py (capture/work_upsert/kb_append)` 代理。在阅读历史时，**必须**使用原生的语义检索工具 `memory_search` 获取碎片。
+3. 请将此手册作为你的底层使用说明。如果被指示配置 Cron 或编写系统自动化脚本，写完命令后必须调用 `memctl.py lint` 测试方案合法性。
+
+---
+
+# TriCore 架构 (TriCore)
 
 > **为真正的自主 Agent 打造的“存储与计算解耦”底层基础设施。**
 
