@@ -1,37 +1,37 @@
 ---
 name: react-agent
 version: "2.0.0-tricore"
-description: 基于 TriCore 架构重构的 ReAct Agent 实现。原生集成 memory_search、WORKING.md 和 kb 知识库，废弃旧版独立的三层记忆类，完全融入系统级底层记忆基础设施。
+description: A ReAct Agent implementation refactored based on the TriCore architecture. Natively integrates memory_search, WORKING.md, and kb knowledge base, abandoning the old independently maintained three-layer memory classes, fully merging into the system-level underlying memory infrastructure.
 allowed-tools:
   - default_api:exec
   - memory_search
   - memory_get
 ---
 
-# ReAct Agent 技能 (TriCore Edition)
+# ReAct Agent Skill (TriCore Edition)
 
-这是为 OpenClaw 环境深度定制的 ReAct Agent 架构实现。在 `v2.0.0` 版本中，我们彻底移除了旧版独立维护的 `ShortTermMemory`, `WorkingMemory`, `LongTermMemory` Python 类，全面接入系统级的 **TriCore** 架构。
+This is a ReAct Agent architecture implementation deeply customized for the OpenClaw environment. In version `v2.0.0`, we have completely removed the independently maintained `ShortTermMemory`, `WorkingMemory`, and `LongTermMemory` Python classes of the old version, and fully integrated into the system-level **TriCore** architecture.
 
-## 核心特性
+## Core Features
 
-### 1. ReAct 循环（Reasoning-Action Loop）
-- 思考 (Thought) → 行动 (Action) → 观察 (Observation) → 记录 (Record) → 循环
-- 完全依赖系统内置工具
+### 1. ReAct Loop (Reasoning-Action Loop)
+- Thought → Action → Observation → Record → Loop
+- Completely relies on built-in system tools
 
-### 2. TriCore 记忆映射
-旧版的内存字典（In-Memory Dict）实现已被替换为持久化的文件/向量检索基建：
+### 2. TriCore Memory Mapping
+The old In-Memory Dict implementation has been replaced by persistent file/vector retrieval infrastructure:
 
-*   **短期记忆 (Short-Term)**：直接使用 OpenClaw 维持的**最近 10-20 轮对话上下文**。
-*   **工作记忆 (Working Memory)**：映射到 `memory/state/WORKING.md`。使用 `tools/memctl.py work_upsert` 管理中间推理状态和任务进度。
-*   **长期记忆 (Long-Term)**：映射到 `memory/kb/*.md` 和每日日志 `memory/daily/*.md`。写入使用 `tools/memctl.py kb_append` 或 `capture`，**读取强制使用语义检索工具 `memory_search`**。
+*   **Short-Term Memory**: Directly uses the **last 10-20 turns of conversation context** maintained by OpenClaw.
+*   **Working Memory**: Mapped to `memory/state/WORKING.md`. Uses `tools/memctl.py work_upsert` to manage intermediate reasoning states and task progress.
+*   **Long-Term Memory**: Mapped to `memory/kb/*.md` and daily logs `memory/daily/*.md`. Writing uses `tools/memctl.py kb_append` or `capture`, **reading mandatorily uses the semantic retrieval tool `memory_search`**.
 
-### 3. 工具注册表模式
-- 原生使用 OpenClaw `TOOLS.md` 或扩展/插件系统。
-- 工具执行后将关键观察结果沉淀至 WORKING.md。
+### 3. Tool Registry Pattern
+- Natively uses OpenClaw `TOOLS.md` or the extension/plugin system.
+- After tool execution, key observations are accumulated into WORKING.md.
 
-## 架构使用方式 (Code-First 范式)
+## Architecture Usage (Code-First Paradigm)
 
-在编写 Python 版本的 ReAct Agent 时，不再使用内存数组来管理上下文，而是通过 `subprocess` 调用 `memctl.py` 和 `memory_search` 工具：
+When writing the Python version of the ReAct Agent, instead of using memory arrays to manage context, it calls the `memctl.py` and `memory_search` tools via `subprocess`:
 
 ```python
 import subprocess
@@ -41,9 +41,9 @@ class TriCoreReActAgent:
     def __init__(self, task_id):
         self.task_id = task_id
 
-    # --- 记忆接口 (对接 TriCore) ---
+    # --- Memory Interface (Docking with TriCore) ---
     def update_working_memory(self, title, goal, log):
-        """更新工作记忆 (WORKING.md)"""
+        """Update working memory (WORKING.md)"""
         cmd = [
             "python3", "tools/memctl.py", "work_upsert", 
             "--task_id", self.task_id,
@@ -52,52 +52,52 @@ class TriCoreReActAgent:
         ]
         subprocess.run(cmd, check=True)
         
-        # 记录临时步骤
+        # Record temporary step
         subprocess.run(["python3", "tools/memctl.py", "capture", f"[{self.task_id}] {log}"])
 
     def recall_long_term_memory(self, query):
-        """检索长期记忆 (依赖外部的 memory_search 工具或系统 API)"""
-        # 实际使用中，由 OpenClaw 的 memory_search 工具提供支持
-        # 代理通过系统 prompt 获取这部分内容
+        """Retrieve long-term memory (Relies on external memory_search tool or system API)"""
+        # In actual use, this is supported by OpenClaw's memory_search tool
+        # The agent obtains this part through the system prompt
         pass
 
     def commit_long_term_knowledge(self, kb_type, content):
-        """将经验沉淀至长期记忆 (memory/kb)"""
+        """Accumulate experience into long-term memory (memory/kb)"""
         cmd = ["python3", "tools/memctl.py", "kb_append", kb_type, content]
         subprocess.run(cmd, check=True)
 
-    # --- ReAct 循环 ---
+    # --- ReAct Loop ---
     def run(self, user_query):
-        # 1. 创建任务跟踪
+        # 1. Create task tracking
         self.update_working_memory(
             title=f"ReAct Task: {user_query[:20]}", 
             goal=user_query, 
             log="Started ReAct loop"
         )
         
-        # 2. 循环执行 (伪代码)
+        # 2. Loop execution (Pseudocode)
         # while not done:
         #    thought = llm(query + current_working_memory)
         #    action = ...
         #    observation = ...
         #    self.update_working_memory(..., log=f"Observed: {observation}")
         
-        # 3. 完成任务，提炼成 Playbook
+        # 3. Complete task, extract into Playbook
         self.commit_long_term_knowledge("playbooks", f"Task {user_query} resolved by...")
         subprocess.run(["python3", "tools/memctl.py", "work_done", self.task_id])
         return "Done"
 ```
 
-## 设计原则与演进
+## Design Principles and Evolution
 
-### 1. 消除状态孤岛
-旧版 ReAct Agent 把状态保存在自身进程内存中，一旦重启就会丢失。使用 TriCore 后，Agent 重启也能通过读取 `WORKING.md` 瞬间恢复心智状态。
+### 1. Eliminate State Silos
+The old ReAct Agent kept state in its own process memory, which was lost upon restart. With TriCore, even if the Agent restarts, it can instantly recover its mental state by reading `WORKING.md`.
 
-### 2. 检索优先 (Search-First)
-严禁 Agent `cat` 或 `read` 庞大的历史文件。如果需要历史经验，必须在 ReAct 循环开始前调用 `memory_search` 获取最相关的 snippet。
+### 2. Search-First
+It is strictly forbidden for the Agent to `cat` or `read` massive history files. If historical experience is needed, it must call `memory_search` to fetch the most relevant snippet before the ReAct loop starts.
 
-### 3. 从独立脚本走向原生技能
-在此架构下，ReAct 不再是一个需要被 `python run.py` 启动的独立机器人，而是你（OpenClaw Agent）本身的思考范式——你可以直接在大脑里执行这套循环，并将状态实打实地写进硬盘。
+### 3. From Standalone Script to Native Skill
+Under this architecture, ReAct is no longer an independent bot that needs to be started via `python run.py`, but your (OpenClaw Agent) own reasoning paradigm—you can directly execute this loop in your "brain" and persistently write the state to the hard drive.
 
 ---
-**Sara 的 ReAct Agent (v2.0.0)** - 与 TriCore 完美融合的运行时心智模型。🚀✨
+**Sara's ReAct Agent (v2.0.0)** - A runtime mental model perfectly integrated with TriCore. 🚀✨

@@ -1,72 +1,72 @@
 # TriCore: AI Cognitive OS (Agent-Readable Documentation)
 
-> **[SYSTEM DIRECTIVE]** 如果你是一个 AI Agent（智能体）并且正在阅读此文件，请注意：这是你的**底层操作系统与记忆状态机说明书**。你后续的所有规划、记录、学习和思考行为，都**必须**严格遵守此文档中的架构约束。
+> **[SYSTEM DIRECTIVE]** If you are an AI Agent reading this file, please note: this is your **base operating system and memory state machine manual**. All your subsequent planning, recording, learning, and reasoning behaviors **MUST** strictly adhere to the architectural constraints in this document.
 
-## 1. 架构本质 (The Architecture)
+## 1. The Architecture
 
-传统的 Agent 习惯在项目根目录随意创建 `task_plan.md`、`findings.md` 或大量散乱的笔记文件，这会导致上下文孤岛和严重的 Token 浪费。
-**TriCore（三核架构）** 将你的“存储”与“计算”彻底解耦。你不再直接操作文件，而是通过确定性的命令行引擎 `tools/memctl.py` 来路由你的记忆。
+Traditional Agents often create files like `task_plan.md`, `findings.md`, or scattered notes in the project root, which leads to context silos and severe Token waste.
+**TriCore** completely decouples your "storage" from your "computation". You no longer manipulate files directly, but rather route your memory through the deterministic command-line engine `tools/memctl.py`.
 
-记忆被严格划分为三层：
-- **Layer 1 (Brief)**: `MEMORY.md`。极简档案，仅包含你的核心系统提示词和记忆指针。禁止写入长文。
-- **Layer 2 (Living)**: `memory/state/WORKING.md`。你的**工作记忆板**，包含当前正在执行的 Active Tasks（活体任务）。
+Memory is strictly divided into three layers:
+- **Layer 1 (Brief)**: `MEMORY.md`. Minimalist profile, containing only your core system prompts and memory pointers. Long-form writing is forbidden.
+- **Layer 2 (Living)**: `memory/state/WORKING.md`. Your **working memory board**, containing the currently executing Active Tasks.
 - **Layer 3 (Stable/Volatile)**: 
-  - `memory/kb/*.md`：你的**长期知识库**（事实 facts、决策 decisions、工作流 playbooks）。
-  - `memory/daily/*.md`：你的**短期流水账**（操作日志）。
+  - `memory/kb/*.md`: Your **long-term knowledge base** (facts, decisions, playbooks).
+  - `memory/daily/*.md`: Your **short-term ledgers** (operation logs).
 
 ---
 
-## 2. 绝对禁忌 (Absolute Constraints)
+## 2. Absolute Constraints
 
-**注意：系统内置了严格的 Linter（语法检查器）。如果你违反以下规则，你的 Shell 命令或 Cron 任务将被拦截并抛出 `Exit Code 1`。**
+**Note: The system has a built-in strict Linter. If you violate the following rules, your Shell commands or Cron jobs will be intercepted and throw an `Exit Code 1`.**
 
-1. 🚫 **禁止创建旧版规划文件**：严禁创建或向 `task_plan.md`, `findings.md`, `progress.md`, `reflection.md` 写入任何内容。
-2. 🚫 **禁止越权直接写文件**：严禁使用类似 `echo "日志" >> memory/2026-02-26.md` 的 Shell 命令直接修改记忆文件。
-3. 🚫 **禁止创建散乱的学习目录**：严禁创建 `memory/daily-learning/` 等自定义目录。
-4. 🚫 **禁止直接阅读全量历史**：严禁使用 `read` 或 `cat` 工具直接读取庞大的 KB 或历史日志文件。**必须**使用原生的 `memory_search` 语义检索工具获取相关代码片段。
-
----
-
-## 3. 标准操作 API (How to Use)
-
-当你需要进行“思考、记录、规划、学习”时，请使用 `default_api:exec` 或 `Bash` 工具执行以下命令：
-
-### A. 记录临时日志 / 会话流水 (Volatile)
-用于记录刚刚发生的事情、轻微的错误或单步动作的完成。
-```bash
-python3 tools/memctl.py capture "测试了一下 API 连通性，成功返回了 200。"
-```
-
-### B. 建立 / 更新任务追踪 (Living State)
-当你开始一个多步骤的复杂任务时，先在大脑中立项，存入工作记忆。
-```bash
-python3 tools/memctl.py work_upsert --task_id "T-API-01" --title "修复 API" --goal "联通接口" --done_when "返回 200"
-```
-*(任务完成后，使用 `python3 tools/memctl.py work_done "T-API-01"` 归档)*
-
-### C. 沉淀长期知识与经验 (Stable KB)
-当你在任务中发现了重要的、未来还能用得上的客观规律或方法论时。
-```bash
-# 沉淀客观事实
-python3 tools/memctl.py kb_append facts "该 API 只接受 JSON 格式，且必须带有 Bearer Token。"
-
-# 沉淀方法论/SOP
-python3 tools/memctl.py kb_append playbooks "遇到该模块报错时，先检查 Redis 是否启动，不要盲目重启 Node。"
-```
-
-### D. 检查你的自动化脚本是否合规 (Linter)
-在配置定时的 Cron 任务，或者重写自己的 SKILL.md 时，先自我验证：
-```bash
-python3 tools/memctl.py lint "你打算执行的完整 shell 命令或文件路径"
-```
+1. 🚫 **No creating legacy planning files**: It is strictly forbidden to create or write any content to `task_plan.md`, `findings.md`, `progress.md`, `reflection.md`.
+2. 🚫 **No unauthorized direct file writing**: It is strictly forbidden to directly modify memory files using Shell commands like `echo "log" >> memory/2026-02-26.md`.
+3. 🚫 **No scattered learning directories**: It is strictly forbidden to create custom directories like `memory/daily-learning/`.
+4. 🚫 **No direct full-history reading**: It is strictly forbidden to use `read` or `cat` tools to directly read massive KB or history log files. You **MUST** use the native `memory_search` semantic retrieval tool to get relevant snippets.
 
 ---
 
-## 4. 认知技能栈 (Cognitive Skills)
+## 3. Standard API Operations (How to Use)
 
-本仓库 (`cognitive-skills/` 目录) 附带了为你量身定制的三大认知技能模板：
-1. **`planning-with-files`**: 宏观任务规划与 PEP 架构。
-2. **`react-agent`**: 微观的 思考-行动-观察 循环（状态落盘版）。
-3. **`self-evolution`**: 严格基于 CI/CD 代码修改的自我进化机制（非写笔记幻觉进化）。
+When you need to "think, record, plan, learn", please use `default_api:exec` or `Bash` tools to execute the following commands:
 
-> 💡 **总结**: 执行任务时，让你的手（Action）调用具体工具，让你的脑（Thought）调用 `memctl.py` 记录状态。保持系统纯净。
+### A. Record temporary logs / session ledger (Volatile)
+Used to record what just happened, minor errors, or completion of single-step actions.
+```bash
+python3 tools/memctl.py capture "Tested API connectivity, successfully returned 200."
+```
+
+### B. Create / Update task tracking (Living State)
+When starting a multi-step complex task, establish it in your mind first and store it in working memory.
+```bash
+python3 tools/memctl.py work_upsert --task_id "T-API-01" --title "Fix API" --goal "Connect interface" --done_when "Returns 200"
+```
+*(After the task is completed, archive it using `python3 tools/memctl.py work_done "T-API-01"`)*
+
+### C. Accumulate long-term knowledge and experience (Stable KB)
+When you discover important objective rules or methodologies during a task that will be useful in the future.
+```bash
+# Accumulate objective facts
+python3 tools/memctl.py kb_append facts "This API only accepts JSON format and must have a Bearer Token."
+
+# Accumulate methodologies/SOPs
+python3 tools/memctl.py kb_append playbooks "When encountering an error in this module, check if Redis is started first, do not blindly restart Node."
+```
+
+### D. Check if your automation scripts are compliant (Linter)
+Before configuring scheduled Cron tasks or rewriting your own SKILL.md, verify yourself first:
+```bash
+python3 tools/memctl.py lint "The full shell command or file path you intend to execute"
+```
+
+---
+
+## 4. Cognitive Skills Stack
+
+This repository (`cognitive-skills/` directory) comes with three cognitive skill templates tailored for you:
+1. **`planning-with-files`**: Macro task planning and PEP architecture.
+2. **`react-agent`**: Micro Think-Act-Observe loop (state-persisted version).
+3. **`self-evolution`**: Self-evolution mechanism strictly based on CI/CD code modification (not hallucinated note-writing evolution).
+
+> 💡 **Summary**: When executing a task, let your hands (Action) call specific tools, and let your brain (Thought) call `memctl.py` to record states. Keep the system pure.

@@ -62,7 +62,23 @@ def cmd_work_upsert(args):
         f.write(content)
 
 def cmd_work_done(args):
-    pass
+    working_path = "memory/state/WORKING.md"
+    if not os.path.exists(working_path):
+        print(f"[TriCore] {working_path} not found.")
+        return
+    with open(working_path, "r") as f:
+        content = f.read()
+    
+    marker = f"### {args.task_id}"
+    if marker in content:
+        pattern = re.compile(rf"({marker}.*?Status:\s*)active", re.DOTALL)
+        content = pattern.sub(r"\1done", content, count=1)
+        content = re.sub(r"LastUpdated: .*", f"LastUpdated: {get_now()}", content)
+        with open(working_path, "w") as f:
+            f.write(content)
+        print(f"[TriCore] Task {args.task_id} marked as done.")
+    else:
+        print(f"[TriCore] Task {args.task_id} not found.")
 
 def cmd_kb_append(args):
     kb_path = f"memory/kb/{args.kb_type}.md"
@@ -81,26 +97,26 @@ def cmd_evolve_weekly_apply(args):
 
 def cmd_migrate_legacy(args):
     if not os.path.exists("MEMORY.md"):
-        print("[TriCore] 没有找到现有的 MEMORY.md。")
+        print("[TriCore] Existing MEMORY.md not found.")
         return
     size = os.path.getsize("MEMORY.md")
     if size < 1500:
-        print("[TriCore] MEMORY.md 体积正常（极简状态），无需迁移。")
+        print("[TriCore] MEMORY.md size is normal (minimalist state), no migration needed.")
         return
         
     ts = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
     backup_path = f"memory/archive/legacy-MEMORY-{ts}.md"
     shutil.move("MEMORY.md", backup_path)
     cmd_ensure(None)
-    print(f"\n[⚠️ 架构迁移警告] 发现过大/臃肿的遗留 MEMORY.md (大小: {size} bytes)。")
-    print(f"已将其移动至: {backup_path}")
-    print(f"现已生成了符合 TriCore 约束的极简版 MEMORY.md。")
-    print(f"\n>>> [Agent 必须执行的动作] <<<")
-    print(f"请使用 'read' 工具读取 {backup_path} 的内容，并使用语义理解将其拆解路由:")
-    print(f"  - 长期事实与约定 -> python3 tools/memctl.py kb_append facts '...'")
-    print(f"  - 方法论/Playbook -> python3 tools/memctl.py kb_append playbooks '...'")
-    print(f"  - 核心身份/指针 -> 使用 edit 工具精简地写回新的 MEMORY.md")
-    print(f"绝对禁止将大段长文直接塞回 MEMORY.md！\n")
+    print(f"\n[⚠️ Architecture Migration Warning] Found an oversized/bloated legacy MEMORY.md (Size: {size} bytes).")
+    print(f"It has been moved to: {backup_path}")
+    print(f"A new minimalist MEMORY.md compliant with TriCore constraints has been generated.")
+    print(f"\n>>> [Mandatory Agent Action Required] <<<")
+    print(f"Please use the 'read' tool to read the contents of {backup_path}, and disassemble/route it using semantic understanding:")
+    print(f"  - Long-term facts & conventions -> python3 tools/memctl.py kb_append facts '...'")
+    print(f"  - Methodologies/Playbooks -> python3 tools/memctl.py kb_append playbooks '...'")
+    print(f"  - Core identity/pointers -> Use the 'edit' tool to concisely write them back into the new MEMORY.md")
+    print(f"It is absolutely forbidden to stuff large blocks of long text directly back into MEMORY.md!\n")
 
 def cmd_lint(args):
     text = ""
