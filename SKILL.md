@@ -33,6 +33,7 @@ Traditional Agent skills often carry their own "memory baggage" (such as generat
    - **Stable/Volatile (Layer 3)**: `memory/kb/*.md` (Accumulated knowledge base) & `memory/daily/*.md` (Temporary logs)
 3. **Retrieval First**: It is forbidden to directly pour huge files using the `read` tool; you must use semantic retrieval `memory_search` to fetch code snippets, greatly saving Tokens and protecting low-resource environments.
 4. **Hard Constraints (Linting)**: Features a native `memctl.py lint` mechanism; any Cron or Skill changes that break the architecture will be intercepted and reported as errors by the Linter.
+5. **System Compatibility (Compaction Hook)**: Automatically overrides OpenClaw's underlying `pre-compaction memory flush` prompt during installation, preventing HTTP 429 request burst death loops caused by unauthorized file writing attempts during Token compaction.
 
 ---
 

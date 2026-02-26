@@ -33,6 +33,7 @@ allowed-tools:
    - **Stable/Volatile (Layer 3)**: `memory/kb/*.md` (沉淀知识库) & `memory/daily/*.md` (临时日志)
 3. **检索优先**: 禁止直接用 `read` 工具灌入巨大文件，必须使用语义检索 `memory_search` 获取代码片段，极大节省 Token 并保护低资源环境。
 4. **硬性约束 (Linting)**: 具备原生的 `memctl.py lint` 机制，任何破坏架构的 Cron 或 Skill 变更都会被 Linter 拦截报错。
+5. **系统兼容 (Compaction Hook)**: 安装时自动覆盖 OpenClaw 底层的 `pre-compaction memory flush` 提示词，防止在 Token 压缩时因尝试越权写文件导致 HTTP 429 请求爆发死循环。
 
 ---
 

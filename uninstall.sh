@@ -40,7 +40,12 @@ for skill in planning-with-files react-agent self-evolution; do
     fi
 done
 
-# 4. Prompt about Data Recovery
+# 4. Clean OpenClaw Config Overrides
+echo "  - Restoring OpenClaw pre-compaction prompt / 恢复系统原版 Token 压缩提示词..."
+openclaw config unset agents.defaults.compaction.memoryFlush.prompt > /dev/null || true
+echo "  - ✅ Config restored."
+
+# 5. Prompt about Data Recovery
 echo ""
 echo "=================================================="
 echo "[TriCore] Uninstallation Complete! / 卸载完成！"

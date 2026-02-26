@@ -112,6 +112,10 @@ else
     echo "[TriCore] POLICY.md already contains compliance constraints."
 fi
 
+# 7. Configure Pre-compaction Override
+echo "[TriCore] Configuring OpenClaw Pre-compaction Memory Flush prompt / 配置系统 Token 压缩的记忆刷写提示词..."
+openclaw config set agents.defaults.compaction.memoryFlush.prompt "[TriCore 架构约束] Tokens 快超出上限，系统即将执行上下文清理 (Compaction)。请将此会话中尚未归档的长期事实、工作流经验和重要状态提取出来。【TriCore 强制写入规范】：绝对禁止使用 edit 或 bash 追加 md 日志！事实提取使用 python3 tools/memctl.py kb_append facts '...'，经验提取使用 python3 tools/memctl.py kb_append playbooks '...'，如果没有需要持久化的记忆，请只回复：NO_REPLY" > /dev/null
+
 # 解除错误陷阱，因为已经成功
 trap - ERR
 
